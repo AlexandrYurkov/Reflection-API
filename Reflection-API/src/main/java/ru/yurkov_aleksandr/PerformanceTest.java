@@ -1,24 +1,28 @@
-package ru.Yurkov_Aleksandr;
+package ru.yurkov_aleksandr;
 
-import ru.Yurkov_Aleksandr.annotations.*;
+import ru.yurkov_aleksandr.annotations.*;
 
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 
 
 public class PerformanceTest {
-    Map<Method, Integer> suite = new LinkedHashMap<>();
-    ArrayList<Method> disabled = new ArrayList<>();
+    private final Map<Method, Integer> suite = new HashMap<>();
+    private final List<Method> disabled = new ArrayList<>();
     private Method beforeSuite = null;
     private Method afterSuite = null;
     private int count = 0;
-
-
+    private int failedCount = 0;
+    /*
+    Почему поля не приватные? | Лучше использовать интерфейс Лист
+    Исправлено
+    31-34 непонятно, а почему сразу не запросить ссылку на нужную аннотацию?
+    Исправлено.
+     */
     public PerformanceTest(Method[] methods) {
         for (Method m : methods) {
             if (m.isAnnotationPresent(Disabled.class))
@@ -28,10 +32,8 @@ public class PerformanceTest {
             else if (m.isAnnotationPresent(AfterSuite.class))
                 this.afterSuite = m;
             else if (m.isAnnotationPresent(Test.class)) {
-                Annotation[] tmp = m.getAnnotations();
-                for(Annotation a : tmp)
-                    if(a instanceof Test)
-                        this.suite.put(m, ((Test) a).priority());
+                Test tmp = m.getAnnotation(Test.class);
+                    this.suite.put(m, tmp.priority());
             }
         }
     }
@@ -51,8 +53,12 @@ public class PerformanceTest {
         return this.disabled;
     }
 
-    public void setCount(int count) {
-        this.count += count;
+    public void addCount() {
+        this.count += 1;
+    }
+
+    public void addFailedCount(){
+        this.failedCount += 1;
     }
 
     private static <K, V extends Comparable<? super V>> Comparator<Map.Entry<K, V>> comparingByValue() {
@@ -73,8 +79,11 @@ public class PerformanceTest {
         String result = "Пропущенно тестов: " +
                 disabled.size() +
                 "\n" +
-                "Выполнено тестов :" +
-                count;
+                "Выполнено тестов: " +
+                count +
+                "\n" +
+                "Провалено тестов: " +
+                failedCount;
         return result;
     }
 

@@ -1,4 +1,4 @@
-package ru.Yurkov_Aleksandr.annotations;
+package ru.yurkov_aleksandr.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
