@@ -1,12 +1,12 @@
-package ru.yurkov_aleksandr;
+package ru.Yurkov_Aleksandr;
 
 
-import ru.yurkov_aleksandr.annotations.*;
-
+import ru.Yurkov_Aleksandr.annotations.*;
 
 public class TestSuite {
 
     @BeforeSuite
+    @Disabled
     public static void init (){
         System.out.println("BeforeSuite");
     }
@@ -77,12 +77,6 @@ public class TestSuite {
         System.out.println("Test 12");
     }
 
-    @Test(priority = 10)
-    public static void test_16() throws Exception {
-        System.out.println("Error");
-        throw new Exception("Error");
-    }
-
 //    @Test(priority = 0)
 //    public static void test_13(){
 //        System.out.println("Test 13");
@@ -93,11 +87,11 @@ public class TestSuite {
 //        System.out.println("Test 14");
 //    }
 
-//    @Disabled
-//    @Test(priority = 15)
-//    public static void test_15(){
-//        System.out.println("Test 15");
-//    }
+    @Disabled
+    @Test(priority = 15)
+    public static void test_15(){
+        System.out.println("Test 15");
+    }
 
     @AfterSuite
     public static void destroy(){

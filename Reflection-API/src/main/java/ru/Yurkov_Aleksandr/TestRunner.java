@@ -1,13 +1,14 @@
-package ru.yurkov_aleksandr;
+package ru.Yurkov_Aleksandr;
 
-import ru.yurkov_aleksandr.annotations.*;
+import ru.Yurkov_Aleksandr.annotations.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.Arrays;
 
 public class TestRunner {
 
-    private static void checkSuite(Method[] methods) throws TestCaseException {
+    private static boolean checkSuite(Method[] methods) throws TestCaseException {
         int beforeCount = 0;
         int afterCount = 0;
         for (Method m : methods) {
@@ -31,22 +32,14 @@ public class TestRunner {
                             throw new TestCaseException(" Не верно указан приоритет!", m.getName());
             }
         }
-        if (beforeCount > 1 || afterCount > 1)
-            throw new TestCaseException(" init or destroy more than one", "BeforeSuite / AfterSuite");
+        return beforeCount <= 1 && afterCount <= 1;
     }
-
-    /*
-        А чего бы в чекСьюте сразу ексепшн не бросать, смысл сюда вытягивать булеан?
-        exception вынес в метод checkSuite
-        Если тестовый метод провалится, то остановятся все тесты
-        исправлено: Добавлен try при выполненнии тестов.
-        А где кол-во проваленных тестов?
-        Добавлено обработка и ввывод проваленных тестов.
-     */
 
     public static void run(Class<?> testSiuteClass) throws TestCaseException {
         Method[] methods = testSiuteClass.getMethods();
-        checkSuite(methods);
+        if (!checkSuite(methods)) {
+            throw new TestCaseException(" init or destroy more than one", "BeforeSuite / AfterSuite");
+        }
         PerformanceTest run = new PerformanceTest(methods);
         try {
             for(Method m : run.getDisabled()){
@@ -59,14 +52,8 @@ public class TestRunner {
                     run.getBeforeSuite().invoke(null);
             }
             for(Method m : run.getSuite()){
-                try {
-                    m.invoke(null);
-                    run.addCount();
-                }catch (Exception e){
-                    run.addFailedCount();
-                    System.out.println(m.getName() + " : Провален тест");
-                }
-
+                m.invoke(null);
+                run.setCount(1);
             }
             if(null != run.getAfterSuite())
                 if(run.getAfterSuite().isAnnotationPresent(Disabled.class))
@@ -76,8 +63,7 @@ public class TestRunner {
             System.out.println(run.result());
 
         } catch (IllegalAccessException | InvocationTargetException e) {
-            System.out.println(run.result());
-            throw new TestCaseException("Тут все пошлно не по плану", "Error");
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,4 +1,4 @@
-package ru.yurkov_aleksandr.annotations;
+package ru.Yurkov_Aleksandr.annotations;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -6,6 +6,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-
-public @interface AfterSuite {
+public @interface Disabled {
 }

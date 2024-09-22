@@ -1,4 +1,4 @@
-package ru.yurkov_aleksandr;
+package ru.Yurkov_Aleksandr;
 
 public class Application {
     public static void main(String[] args) {
